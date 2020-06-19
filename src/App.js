@@ -13,53 +13,63 @@ import './App.css';
 Amplify.configure(awsExports);
 
 const App = () => {
-  let [user, setUser] = useState(null)
-  let [signupCollapsed, setSignupCollapsed] = useState(true);
+  const [user, setUser] = useState(null);
+  const [signupCollapsed, setSignupCollapsed] = useState(true);
 
   useEffect(() => {
-    let updateUser = async authState => {
+    const updateUser = async () => {
       try {
-        let currentAuthenticatedUser = await Auth.currentAuthenticatedUser()
+        const currentAuthenticatedUser = await Auth.currentAuthenticatedUser();
         setUser(currentAuthenticatedUser);
       } catch {
         setUser(null);
       }
     };
-    Hub.listen('auth', updateUser) // listen for login/signup events
-    updateUser() // check manually the first time because we won't get a Hub event
-    return () => Hub.remove('auth', updateUser) // cleanup
+    Hub.listen('auth', updateUser); // listen for login/signup events
+    updateUser(); // check manually the first time because we won't get a Hub event
+    return () => Hub.remove('auth', updateUser); // cleanup
   }, []);
-  
+
   const userValidated = !isNull(user);
 
-  return(
-      <div className="App">
-        <Container>
-          <Row>
-            <Col xs={12}>
+  return (
+    <div className="App">
+      <Container>
+        <Row>
+          <Col xs={12}>
             <h1>Hiya</h1>
             <hr />
-              {
-                userValidated ? <UserDashboard user={user} /> : null
-              }
-              {
-                (!userValidated && signupCollapsed) ? <SignInForm /> : null
-              }
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              {
-                signupCollapsed ? <Button style={{ marginTop: '3em' }} block onClick={() => setSignupCollapsed(false)}>Sign Up</Button> : <SignUpForm />
-              }
-              {
-                !signupCollapsed ? <Button style={{ marginTop: '3em' }} block onClick={() => setSignupCollapsed(true)}>Sign In</Button> : null
-              }
-            </Col>
-          </Row>
-        </Container>
-      </div>
-  )
-}
+            {userValidated ? <UserDashboard user={user} /> : null}
+            {!userValidated && signupCollapsed ? <SignInForm /> : null}
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            {signupCollapsed ? (
+              <Button
+                style={{ marginTop: '3em' }}
+                block
+                onClick={() => setSignupCollapsed(false)}
+              >
+                Sign Up
+              </Button>
+            ) : (
+              <SignUpForm />
+            )}
+            {!signupCollapsed ? (
+              <Button
+                style={{ marginTop: '3em' }}
+                block
+                onClick={() => setSignupCollapsed(true)}
+              >
+                Sign In
+              </Button>
+            ) : null}
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  );
+};
 
-export default(App)
+export default App;
