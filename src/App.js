@@ -1,31 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { isNull } from 'lodash';
 import { Container, Row, Col, Button } from 'reactstrap';
+import Amplify, { Auth, Hub } from 'aws-amplify';
+
 import SignInForm from './components/SignInForm';
 import SignUpForm from './components/SignUpForm';
 import UserDashboard from './components/UserDashboard';
+import awsExports from './aws-exports';
+
 import './App.css';
 
-// Auth
-// import { withAuthenticator } from 'aws-amplify-react'
-import Amplify, { Auth } from 'aws-amplify';
-import aws_exports from './aws-exports';
-import { Hub } from 'aws-amplify';
-Amplify.configure(aws_exports);
+Amplify.configure(awsExports);
 
-const App  = () => {
+const App = () => {
   let [user, setUser] = useState(null)
   let [signupCollapsed, setSignupCollapsed] = useState(true);
 
   useEffect(() => {
     let updateUser = async authState => {
       try {
-        let user = await Auth.currentAuthenticatedUser()
-        setUser(user)
+        let currentAuthenticatedUser = await Auth.currentAuthenticatedUser()
+        setUser(currentAuthenticatedUser);
       } catch {
-        setUser(null)
+        setUser(null);
       }
-    }
+    };
     Hub.listen('auth', updateUser) // listen for login/signup events
     updateUser() // check manually the first time because we won't get a Hub event
     return () => Hub.remove('auth', updateUser) // cleanup
