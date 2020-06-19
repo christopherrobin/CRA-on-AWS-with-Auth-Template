@@ -11,10 +11,12 @@
         "prettier"
     ],
     "rules": {
+        "indent": ["error", 2],
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
         "prettier/prettier": [
             "error", {
-                "singleQuote": true
+                "singleQuote": true,
+                "tabWidth": 2
             }
         ]
     }
